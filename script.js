@@ -4,10 +4,10 @@ document.body.classList.add('is-loading');
 gsap.registerPlugin(ScrollTrigger);
 
 const state = {
-    audioContext: null,
-    masterGain: null,
-    oscillators: [],
-    isPlaying: false,
+    backgroundAudio: null,
+    favoriteAudio: null,
+    isBackgroundPlaying: false,
+    isFavoritePlaying: false,
     typingStarted: false
 };
 
@@ -37,6 +37,7 @@ function initLoader() {
                     document.body.classList.remove('is-loading');
                     gsap.to('#main-content', { opacity: 1, duration: 0.9, ease: 'power2.out' });
                     runHeroIntro();
+                    startAudio();
                 }
             });
         }
@@ -343,80 +344,113 @@ function initParallax() {
     });
 }
 
-// Custom Web Audio music bed and ambient sound after interaction.
+// HTML audio tracks: opening music and favorite song.
 function setupAudio() {
     const playButton = document.querySelector('#play-toggle');
     const replayButton = document.querySelector('#replay-music');
 
-    playButton.addEventListener('click', toggleAudio);
+    state.backgroundAudio = document.querySelector('#background-audio');
+    state.favoriteAudio = document.querySelector('#favorite-audio');
+
+    if (state.backgroundAudio) state.backgroundAudio.volume = 0.36;
+    if (state.favoriteAudio) state.favoriteAudio.volume = 0.76;
+
+    playButton.addEventListener('click', toggleFavoriteAudio);
     replayButton.addEventListener('click', () => {
-        if (!state.isPlaying) startAudio();
+        startAudio(true);
         gsap.fromTo('#final .reveal', { scale: 0.97 }, { scale: 1, duration: 0.7, ease: 'elastic.out(1, .45)' });
     });
 
+    if (state.favoriteAudio) {
+        state.favoriteAudio.addEventListener('play', () => {
+            stopBackgroundAudio();
+            state.isFavoritePlaying = true;
+            document.body.classList.add('audio-playing');
+            updatePlayIcon(true);
+        });
+
+        state.favoriteAudio.addEventListener('pause', () => {
+            state.isFavoritePlaying = false;
+            document.body.classList.remove('audio-playing');
+            updatePlayIcon(false);
+        });
+
+        state.favoriteAudio.addEventListener('ended', () => {
+            state.isFavoritePlaying = false;
+            document.body.classList.remove('audio-playing');
+            updatePlayIcon(false);
+            startAudio(true);
+        });
+    }
+
     window.addEventListener('pointerdown', () => {
-        if (!state.audioContext) initializeAudioGraph();
+        if (!state.isFavoritePlaying) startAudio();
     }, { once: true });
 }
 
-function initializeAudioGraph() {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
+function startAudio(restart = false) {
+    const audio = state.backgroundAudio;
+    if (!audio || state.isFavoritePlaying) return;
 
-    state.audioContext = new AudioContext();
-    state.masterGain = state.audioContext.createGain();
-    state.masterGain.gain.value = 0;
-    state.masterGain.connect(state.audioContext.destination);
+    audio.volume = 0.36;
+    if (restart) audio.currentTime = 0;
 
-    const notes = [261.63, 329.63, 392.00, 493.88];
-    notes.forEach((frequency, index) => {
-        const oscillator = state.audioContext.createOscillator();
-        const gain = state.audioContext.createGain();
-        oscillator.type = index % 2 === 0 ? 'sine' : 'triangle';
-        oscillator.frequency.value = frequency / (index === 3 ? 2 : 1);
-        gain.gain.value = 0.028 / (index + 1);
-        oscillator.connect(gain);
-        gain.connect(state.masterGain);
-        oscillator.start();
-        state.oscillators.push({ oscillator, gain, baseFrequency: oscillator.frequency.value });
-    });
-
-    const lfo = state.audioContext.createOscillator();
-    const lfoGain = state.audioContext.createGain();
-    lfo.frequency.value = 0.08;
-    lfoGain.gain.value = 7;
-    lfo.connect(lfoGain);
-    state.oscillators.forEach(({ oscillator }) => lfoGain.connect(oscillator.frequency));
-    lfo.start();
+    const playPromise = audio.play();
+    if (playPromise) {
+        playPromise
+            .then(() => {
+                state.isBackgroundPlaying = true;
+            })
+            .catch(() => {
+                state.isBackgroundPlaying = false;
+            });
+    } else {
+        state.isBackgroundPlaying = true;
+    }
 }
 
-function startAudio() {
-    if (!state.audioContext) initializeAudioGraph();
-    if (!state.audioContext) return;
+function stopBackgroundAudio() {
+    const audio = state.backgroundAudio;
+    if (!audio) return;
 
-    state.audioContext.resume();
-    state.masterGain.gain.cancelScheduledValues(state.audioContext.currentTime);
-    state.masterGain.gain.linearRampToValueAtTime(0.86, state.audioContext.currentTime + 0.9);
-    state.isPlaying = true;
-    document.body.classList.add('audio-playing');
-    updatePlayIcon(true);
+    audio.pause();
+    state.isBackgroundPlaying = false;
 }
 
-function stopAudio() {
-    if (!state.audioContext) return;
+function playFavoriteAudio() {
+    const audio = state.favoriteAudio;
+    if (!audio) return;
 
-    state.masterGain.gain.cancelScheduledValues(state.audioContext.currentTime);
-    state.masterGain.gain.linearRampToValueAtTime(0, state.audioContext.currentTime + 0.6);
-    state.isPlaying = false;
+    stopBackgroundAudio();
+    audio.volume = 0.76;
+    audio.currentTime = 0;
+
+    const playPromise = audio.play();
+    if (playPromise) {
+        playPromise.catch(() => {
+            state.isFavoritePlaying = false;
+            updatePlayIcon(false);
+            startAudio();
+        });
+    }
+}
+
+function stopFavoriteAudio() {
+    const audio = state.favoriteAudio;
+    if (!audio) return;
+
+    audio.pause();
+    state.isFavoritePlaying = false;
     document.body.classList.remove('audio-playing');
     updatePlayIcon(false);
+    startAudio();
 }
 
-function toggleAudio() {
-    if (state.isPlaying) {
-        stopAudio();
+function toggleFavoriteAudio() {
+    if (state.isFavoritePlaying) {
+        stopFavoriteAudio();
     } else {
-        startAudio();
+        playFavoriteAudio();
     }
 }
 
@@ -465,9 +499,24 @@ function initHoverTilt() {
     });
 }
 
+// Local image placeholders fall back to remote demo images until real files are dropped in.
+function initMediaFallbacks() {
+    document.querySelectorAll('img[data-fallback-src]').forEach((image) => {
+        const fallback = image.dataset.fallbackSrc;
+        const useFallback = () => {
+            if (fallback && image.src !== fallback) image.src = fallback;
+        };
+
+        image.addEventListener('error', useFallback, { once: true });
+        if (image.complete && image.naturalWidth === 0) useFallback();
+    });
+}
+
 // Bootstrap all interactions.
 window.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
+    initMediaFallbacks();
+    setupAudio();
     initLoader();
     initReveals();
     initTypingEffect();
@@ -482,5 +531,4 @@ window.addEventListener('DOMContentLoaded', () => {
     initParallax();
     initVisualizer();
     initHoverTilt();
-    setupAudio();
 });
