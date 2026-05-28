@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Website hadiah ulang tahun romantis dan cinematic untuk Saskia.">
+    <meta name="theme-color" content="#19051f">
     <title>Happy Birthday Saskia — A Little Surprise Made With Love</title>
 
     <!-- Romantic font pairing -->
@@ -68,17 +69,24 @@
             <div class="hero-aurora"></div>
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,.12),transparent_32%),linear-gradient(180deg,rgba(5,3,8,.05),rgba(5,3,8,.72))]"></div>
             <div class="reveal relative mx-auto max-w-5xl">
-                <p class="mb-4 text-[0.72rem] uppercase tracking-[0.58em] text-rose-100/70">A little birthday surprise</p>
-                <h1 class="text-balance font-serif text-5xl font-bold leading-tight sm:text-7xl lg:text-8xl">
+                <div class="romantic-badge mx-auto mb-5 w-fit">Made with love · 28 May</div>
+                <p class="mb-4 text-[0.68rem] uppercase tracking-[0.48em] text-rose-100/70 sm:text-[0.72rem] sm:tracking-[0.58em]">A little birthday surprise</p>
+                <h1 class="text-balance font-serif text-5xl font-bold leading-[0.95] sm:text-7xl lg:text-8xl">
                     Happy Birthday <span class="block font-script text-[1.28em] font-normal text-gradient">Saskia</span>
                 </h1>
                 <p class="mx-auto mt-6 max-w-2xl text-balance text-base leading-8 text-rose-50/78 sm:text-lg">
                     Hari ini dunia merayakan seseorang yang sangat spesial — seseorang yang kehadirannya terasa seperti cahaya kecil yang selalu menghangatkan hati.
                 </p>
-                <button id="open-memories" class="magnetic-btn group mt-10 inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-8 py-4 text-sm font-semibold uppercase tracking-[0.24em] text-white shadow-[0_0_40px_rgba(255,59,125,.28)] backdrop-blur-xl transition hover:border-rose-200/50 hover:bg-rose-300/15">
-                    Open Memories
-                    <span class="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-rose-400 to-violet-500 transition group-hover:translate-x-1">♥</span>
-                </button>
+                <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                    <button id="open-memories" class="magnetic-btn group inline-flex w-full items-center justify-center gap-3 rounded-full border border-white/15 bg-white/10 px-7 py-4 text-xs font-semibold uppercase tracking-[0.22em] text-white shadow-[0_0_40px_rgba(255,59,125,.28)] backdrop-blur-xl transition hover:border-rose-200/50 hover:bg-rose-300/15 sm:w-auto sm:text-sm sm:tracking-[0.24em]">
+                        Buka Pesan
+                        <span class="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-rose-400 to-violet-500 transition group-hover:translate-x-1">♥</span>
+                    </button>
+                    <button id="open-song" class="magnetic-btn soft-pill inline-flex w-full items-center justify-center gap-3 rounded-full px-7 py-4 text-xs font-semibold uppercase tracking-[0.22em] sm:w-auto sm:text-sm sm:tracking-[0.24em]">
+                        Dengar Lagu
+                        <i data-lucide="music-2" class="h-5 w-5"></i>
+                    </button>
+                </div>
             </div>
             <div class="wave-divider bottom-wave" aria-hidden="true"></div>
         </section>
@@ -89,7 +97,7 @@
                 <div class="reveal glass-card p-7 sm:p-10 md:p-12">
                     <p class="mb-3 font-script text-4xl text-rose-200">Dear Saskia,</p>
                     <h2 class="mb-8 font-serif text-3xl font-bold sm:text-5xl">Untuk hati yang selalu pantas dirayakan</h2>
-                    <p id="typed-message" class="min-h-[330px] whitespace-pre-line text-base leading-9 text-rose-50/82 sm:text-lg"></p>
+                    <p id="typed-message" class="typed-message whitespace-pre-line text-base leading-8 text-rose-50/82 sm:text-lg sm:leading-9"></p>
                     <blockquote class="mt-8 border-l-2 border-rose-300/60 pl-5 font-serif text-xl italic text-rose-100/90">
                         “Beberapa orang hadir seperti doa yang diam-diam dikabulkan.”
                     </blockquote>
@@ -105,7 +113,7 @@
                     <h2 class="section-title">Gallery of Memories</h2>
                     <p class="section-subtitle">Ganti placeholder ini dengan foto-foto Saskia dan momen paling berharga kalian.</p>
                 </div>
-                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
                     <figure class="gallery-card reveal" data-caption="Senyum yang selalu punya cara membuat hari terasa lebih lembut.">
                         <img src="assets/images/gallery-01.jpg" data-image-href="assets/images/gallery-01.jpg" data-fallback-src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=900&q=80" alt="Placeholder memory romantic flowers">
                         <figcaption>Senyum paling hangat</figcaption>
@@ -200,31 +208,6 @@
             </div>
         </section>
 
-        <!-- Timeline Memories Section -->
-        <section id="timeline" class="section-shell relative px-6 py-24 sm:py-32">
-            <div class="mx-auto max-w-5xl">
-                <div class="reveal mb-14 text-center">
-                    <p class="section-kicker">timeline memories</p>
-                    <h2 class="section-title">Jejak Kenangan</h2>
-                    <p class="section-subtitle">Setiap titik bisa kamu ubah menjadi tanggal, foto, dan cerita asli kalian.</p>
-                </div>
-                <div class="timeline-wrap">
-                    <div class="timeline-line"></div>
-                    <div class="memory-card reveal">
-                        <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=500&q=80" alt="First memory placeholder">
-                        <div><span>Chapter 01</span><h3>Pertama kali mengenal Saskia</h3><p>Ada rasa hangat yang muncul pelan-pelan, seperti cahaya pagi yang masuk dari sela jendela.</p></div>
-                    </div>
-                    <div class="memory-card reveal">
-                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=500&q=80" alt="Favorite memory placeholder">
-                        <div><span>Chapter 02</span><h3>Obrolan yang tak ingin selesai</h3><p>Dari percakapan sederhana, ternyata banyak hal kecil yang menjadi alasan untuk tersenyum.</p></div>
-                    </div>
-                    <div class="memory-card reveal">
-                        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=500&q=80" alt="Birthday memory placeholder">
-                        <div><span>Chapter 03</span><h3>Hari ini, hari Saskia</h3><p>Semua doa terbaik berkumpul di satu hari: semoga bahagia selalu menemukan jalan pulang kepadamu.</p></div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Final Emotional Section -->
         <section id="final" class="section-shell final-sky relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24 text-center">

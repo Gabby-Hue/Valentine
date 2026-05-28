@@ -59,29 +59,31 @@ function initLoader() {
 // Hero cinematic reveal.
 function runHeroIntro() {
     gsap.from('#hero .reveal > *', {
-        y: 36,
+        y: 30,
         opacity: 0,
-        duration: 1.15,
-        stagger: 0.16,
+        duration: 1.05,
+        stagger: 0.13,
         ease: 'power3.out'
     });
 }
 
 // Smooth scroll reveal for every section.
 function initReveals() {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
     gsap.utils.toArray('.reveal').forEach((element) => {
         gsap.fromTo(element,
-            { y: 58, opacity: 0, filter: 'blur(10px)' },
+            { y: isMobile ? 28 : 46, opacity: 0, filter: 'blur(8px)' },
             {
                 y: 0,
                 opacity: 1,
                 filter: 'blur(0px)',
-                duration: 1.05,
+                duration: isMobile ? 0.78 : 0.95,
                 ease: 'power3.out',
                 scrollTrigger: {
                     trigger: element,
-                    start: 'top 82%',
-                    toggleActions: 'play none none reverse'
+                    start: isMobile ? 'top 88%' : 'top 84%',
+                    toggleActions: 'play none none none'
                 }
             }
         );
@@ -226,10 +228,12 @@ function initStarCanvas() {
 // Cursor glow follows mouse and enlarges on interactive elements.
 function initCursorGlow() {
     const cursor = document.querySelector('#cursor-glow');
+    if (!cursor || !window.matchMedia('(pointer: fine)').matches) return;
+
     const interactiveSelector = 'a, button, .gallery-card, .fact-card';
 
     window.addEventListener('pointermove', (event) => {
-        gsap.to(cursor, { x: event.clientX, y: event.clientY, duration: 0.18, ease: 'power2.out' });
+        gsap.to(cursor, { x: event.clientX, y: event.clientY, duration: 0.16, ease: 'power2.out' });
     });
 
     document.querySelectorAll(interactiveSelector).forEach((element) => {
@@ -240,24 +244,39 @@ function initCursorGlow() {
 
 // Magnetic hover for premium buttons.
 function initMagneticButtons() {
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
     document.querySelectorAll('.magnetic-btn').forEach((button) => {
         button.addEventListener('mousemove', (event) => {
             const rect = button.getBoundingClientRect();
             const x = event.clientX - rect.left - rect.width / 2;
             const y = event.clientY - rect.top - rect.height / 2;
-            gsap.to(button, { x: x * 0.18, y: y * 0.22, duration: 0.35, ease: 'power3.out' });
+            gsap.to(button, { x: x * 0.16, y: y * 0.18, duration: 0.32, ease: 'power3.out' });
         });
 
         button.addEventListener('mouseleave', () => {
-            gsap.to(button, { x: 0, y: 0, duration: 0.45, ease: 'elastic.out(1, .45)' });
+            gsap.to(button, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, .45)' });
         });
     });
 }
 
 // Smooth scroll button.
+function smoothScrollTo(selector) {
+    const target = document.querySelector(selector);
+    if (!target) return;
+
+    const top = target.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top, behavior: 'smooth' });
+}
+
 function initMemoryButton() {
-    document.querySelector('#open-memories').addEventListener('click', () => {
-        document.querySelector('#greeting').scrollIntoView({ behavior: 'smooth' });
+    document.querySelector('#open-memories')?.addEventListener('click', () => {
+        smoothScrollTo('#greeting');
+        startAudio();
+    });
+
+    document.querySelector('#open-song')?.addEventListener('click', () => {
+        smoothScrollTo('#song');
         startAudio();
     });
 }
@@ -485,16 +504,18 @@ function initVisualizer() {
 
 // Gentle 3D card motion for gallery and fact cards.
 function initHoverTilt() {
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
     document.querySelectorAll('.gallery-card, .fact-card, .glass-card').forEach((card) => {
         card.addEventListener('mousemove', (event) => {
             const rect = card.getBoundingClientRect();
-            const rotateY = ((event.clientX - rect.left) / rect.width - 0.5) * 7;
-            const rotateX = ((event.clientY - rect.top) / rect.height - 0.5) * -7;
-            gsap.to(card, { rotateX, rotateY, transformPerspective: 900, duration: 0.35, ease: 'power2.out' });
+            const rotateY = ((event.clientX - rect.left) / rect.width - 0.5) * 5;
+            const rotateX = ((event.clientY - rect.top) / rect.height - 0.5) * -5;
+            gsap.to(card, { rotateX, rotateY, transformPerspective: 900, duration: 0.32, ease: 'power2.out' });
         });
 
         card.addEventListener('mouseleave', () => {
-            gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5, ease: 'power3.out' });
+            gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.48, ease: 'power3.out' });
         });
     });
 }
