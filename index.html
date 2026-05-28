@@ -1,22 +1,255 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Will You Be My Valentine?</title>
+    <meta name="description" content="Website hadiah ulang tahun romantis dan cinematic untuk Saskia.">
+    <title>Happy Birthday Saskia — A Little Surprise Made With Love</title>
+
+    <!-- Romantic font pairing -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN for fast utility-driven layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        script: ['Great Vibes', 'cursive'],
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Poppins', 'sans-serif']
+                    },
+                    colors: {
+                        wine: '#5f0f2f',
+                        velvet: '#19051f',
+                        roseglow: '#ff3b7d',
+                        violetglow: '#9d4edd'
+                    }
+                }
+            }
+        };
+    </script>
+
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="container">
-        <h1>Aku bole ga jadi valentine keduanya ka mel?</h1>
-        <div class="buttons">
-            <button class="yes-button" onclick="handleYesClick()">Iyaa gerbill~</button>
-            <button class="no-button" onclick="handleNoClick()">G cari lain sana</button>
-        </div>
-        <div class="gif_container">
-            <img src="https://media.tenor.com/pj-WvOM7W2oAAAAj/mocha-and.gif" alt="Cute GIF">
+<body class="bg-velvet text-white font-sans antialiased overflow-x-hidden">
+    <!-- Loading Screen -->
+    <div id="loader" class="fixed inset-0 z-[100] grid place-items-center overflow-hidden bg-[#050308]">
+        <div class="loader-orb loader-orb-red"></div>
+        <div class="loader-orb loader-orb-purple"></div>
+        <div class="relative z-10 flex w-[min(86vw,420px)] flex-col items-center text-center">
+            <div class="mb-7 grid h-24 w-24 place-items-center rounded-full border border-rose-200/20 bg-white/5 shadow-[0_0_60px_rgba(255,59,125,.28)] backdrop-blur-xl">
+                <span id="loader-count" class="font-serif text-3xl text-rose-100">0</span>
+            </div>
+            <p class="mb-5 text-[0.68rem] uppercase tracking-[0.55em] text-rose-100/70">Loading special memories...</p>
+            <div class="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                <div id="loader-bar" class="h-full w-0 rounded-full bg-gradient-to-r from-rose-500 via-pink-300 to-violet-400 shadow-[0_0_24px_rgba(255,83,151,.9)]"></div>
+            </div>
         </div>
     </div>
+
+    <!-- Cursor Glow & Scroll Progress -->
+    <div id="cursor-glow" aria-hidden="true"></div>
+    <div class="fixed left-0 top-0 z-[90] h-1 w-full bg-white/5">
+        <div id="scroll-progress" class="h-full w-0 bg-gradient-to-r from-rose-500 via-fuchsia-400 to-violet-400 shadow-[0_0_18px_rgba(255,59,125,.9)]"></div>
+    </div>
+
+    <!-- Global animated backgrounds -->
+    <canvas id="star-canvas" class="pointer-events-none fixed inset-0 z-0 opacity-70"></canvas>
+    <div id="heart-field" class="pointer-events-none fixed inset-0 z-[1] overflow-hidden"></div>
+    <div id="heart-rain" class="pointer-events-none fixed inset-0 z-[2] overflow-hidden opacity-0"></div>
+
+    <main id="main-content" class="relative z-10 opacity-0">
+        <!-- Hero Section -->
+        <section id="hero" class="section-shell relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24 text-center">
+            <div class="hero-aurora"></div>
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,.12),transparent_32%),linear-gradient(180deg,rgba(5,3,8,.05),rgba(5,3,8,.72))]"></div>
+            <div class="reveal relative mx-auto max-w-5xl">
+                <p class="mb-4 text-[0.72rem] uppercase tracking-[0.58em] text-rose-100/70">A little birthday surprise</p>
+                <h1 class="text-balance font-serif text-5xl font-bold leading-tight sm:text-7xl lg:text-8xl">
+                    Happy Birthday <span class="block font-script text-[1.28em] font-normal text-gradient">Saskia</span>
+                </h1>
+                <p class="mx-auto mt-6 max-w-2xl text-balance text-base leading-8 text-rose-50/78 sm:text-lg">
+                    Hari ini dunia merayakan seseorang yang sangat spesial — seseorang yang kehadirannya terasa seperti cahaya kecil yang selalu menghangatkan hati.
+                </p>
+                <button id="open-memories" class="magnetic-btn group mt-10 inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-8 py-4 text-sm font-semibold uppercase tracking-[0.24em] text-white shadow-[0_0_40px_rgba(255,59,125,.28)] backdrop-blur-xl transition hover:border-rose-200/50 hover:bg-rose-300/15">
+                    Open Memories
+                    <span class="grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-rose-400 to-violet-500 transition group-hover:translate-x-1">♥</span>
+                </button>
+            </div>
+            <div class="wave-divider bottom-wave" aria-hidden="true"></div>
+        </section>
+
+        <!-- Romantic Greeting Section -->
+        <section id="greeting" class="section-shell relative px-6 py-24 sm:py-32">
+            <div class="mx-auto max-w-4xl">
+                <div class="reveal glass-card p-7 sm:p-10 md:p-12">
+                    <p class="mb-3 font-script text-4xl text-rose-200">Dear Saskia,</p>
+                    <h2 class="mb-8 font-serif text-3xl font-bold sm:text-5xl">Untuk hati yang selalu pantas dirayakan</h2>
+                    <p id="typed-message" class="min-h-[330px] whitespace-pre-line text-base leading-9 text-rose-50/82 sm:text-lg"></p>
+                    <blockquote class="mt-8 border-l-2 border-rose-300/60 pl-5 font-serif text-xl italic text-rose-100/90">
+                        “Beberapa orang hadir seperti doa yang diam-diam dikabulkan.”
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery" class="section-shell relative px-6 py-24 sm:py-32">
+            <div class="mx-auto max-w-6xl">
+                <div class="reveal mb-12 text-center">
+                    <p class="section-kicker">tiny frames of happiness</p>
+                    <h2 class="section-title">Gallery of Memories</h2>
+                    <p class="section-subtitle">Ganti placeholder ini dengan foto-foto Saskia dan momen paling berharga kalian.</p>
+                </div>
+                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <figure class="gallery-card reveal" data-caption="Senyum yang selalu punya cara membuat hari terasa lebih lembut.">
+                        <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=900&q=80" alt="Placeholder memory romantic flowers">
+                        <figcaption>Senyum paling hangat</figcaption>
+                    </figure>
+                    <figure class="gallery-card reveal" data-caption="Momen kecil, tapi rasanya tinggal lama di ingatan.">
+                        <img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=900&q=80" alt="Placeholder pink flowers memory">
+                        <figcaption>Momen kecil favorit</figcaption>
+                    </figure>
+                    <figure class="gallery-card reveal" data-caption="Semoga setiap langkah Saskia selalu ditemani hal-hal baik.">
+                        <img src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=900&q=80" alt="Placeholder dreamy candle memory">
+                        <figcaption>Doa di setiap langkah</figcaption>
+                    </figure>
+                    <figure class="gallery-card reveal" data-caption="Satu foto, banyak rasa, dan cerita yang tidak pernah benar-benar selesai.">
+                        <img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?auto=format&fit=crop&w=900&q=80" alt="Placeholder red roses memory">
+                        <figcaption>Cerita yang indah</figcaption>
+                    </figure>
+                    <figure class="gallery-card reveal" data-caption="Hari-hari biasa yang menjadi spesial karena ada Saskia di dalamnya.">
+                        <img src="https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=900&q=80" alt="Placeholder neon night memory">
+                        <figcaption>Hari biasa yang spesial</figcaption>
+                    </figure>
+                    <figure class="gallery-card reveal" data-caption="Untuk semua kenangan yang sudah ada, dan yang masih menunggu untuk dibuat.">
+                        <img src="https://images.unsplash.com/photo-1482575832494-771f74bf6857?auto=format&fit=crop&w=900&q=80" alt="Placeholder starry memory">
+                        <figcaption>Kenangan berikutnya</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Saskia Section -->
+        <section id="about" class="section-shell relative px-6 py-24 sm:py-32">
+            <div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[.92fr_1.08fr]">
+                <div class="reveal parallax-card relative">
+                    <div class="portrait-frame">
+                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80" alt="Placeholder portrait Saskia">
+                    </div>
+                </div>
+                <div class="reveal">
+                    <p class="section-kicker text-left">about the birthday girl</p>
+                    <h2 class="section-title text-left">Saskia, versi paling indah dari sederhana</h2>
+                    <p class="mt-5 text-lg leading-9 text-rose-50/78">
+                        Saskia adalah tipe seseorang yang bisa membuat ruangan terasa lebih tenang hanya dengan hadir. Ada lembut dalam caranya tersenyum, ada kuat dalam caranya bertahan, dan ada indah dalam hal-hal kecil yang ia lakukan tanpa sadar.
+                    </p>
+                    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+                        <div class="fact-card"><i data-lucide="palette"></i><div><span>Warna favorit</span><strong>Merah hati & ungu lembut</strong></div></div>
+                        <div class="fact-card"><i data-lucide="music-2"></i><div><span>Lagu favorit</span><strong>Romantic slow song</strong></div></div>
+                        <div class="fact-card"><i data-lucide="sparkles"></i><div><span>Hal yang disukai</span><strong>Senja, bunga, dan kejutan kecil</strong></div></div>
+                        <div class="fact-card"><i data-lucide="heart-handshake"></i><div><span>Sifatnya</span><strong>Hangat, manis, dan tulus</strong></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Favorite Song Section -->
+        <section id="song" class="section-shell relative px-6 py-24 sm:py-32">
+            <div class="mx-auto max-w-4xl">
+                <div class="reveal music-player overflow-hidden rounded-[2rem] border border-white/15 bg-white/[.07] p-7 shadow-[0_0_80px_rgba(157,78,221,.20)] backdrop-blur-2xl sm:p-9">
+                    <div class="grid items-center gap-8 md:grid-cols-[220px_1fr]">
+                        <div class="cover-art mx-auto grid h-56 w-56 place-items-center rounded-[1.75rem] bg-gradient-to-br from-rose-500 via-fuchsia-700 to-violet-700 shadow-[0_0_55px_rgba(255,59,125,.35)]">
+                            <i data-lucide="disc-3" class="h-20 w-20 text-white/80"></i>
+                        </div>
+                        <div>
+                            <p class="section-kicker text-left">favorite song</p>
+                            <h2 class="font-serif text-4xl font-bold sm:text-5xl">Until I Found You</h2>
+                            <p class="mt-2 text-rose-100/70">Stephen Sanchez · romantic birthday mix</p>
+                            <div class="my-8 flex h-16 items-end gap-1.5" id="visualizer" aria-hidden="true"></div>
+                            <div class="flex flex-wrap items-center gap-4">
+                                <button id="play-toggle" class="grid h-16 w-16 place-items-center rounded-full bg-gradient-to-br from-rose-400 to-violet-500 text-white shadow-[0_0_35px_rgba(255,59,125,.45)] transition hover:scale-105" aria-label="Play or pause favorite song">
+                                    <i data-lucide="play" class="play-icon h-7 w-7"></i>
+                                </button>
+                                <p class="max-w-md text-sm leading-7 text-rose-50/66">Ketuk tombol ini untuk menyalakan musik dan ambient glow. Browser akan memulai audio setelah interaksi pertama.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Love Letter Section -->
+        <section id="letter" class="section-shell relative px-6 py-24 sm:py-32">
+            <div class="mx-auto max-w-4xl">
+                <article class="reveal love-letter p-8 sm:p-12">
+                    <p class="font-script text-5xl text-wine">For Saskia</p>
+                    <h2 class="mt-3 font-serif text-3xl font-bold text-[#3b1026] sm:text-5xl">Sebuah doa kecil di hari ulang tahunmu</h2>
+                    <p class="mt-8 text-lg leading-9 text-[#4b1c31]">
+                        Semoga tahun ini memelukmu dengan cara yang paling lembut. Semoga hal-hal yang pernah membuatmu lelah perlahan diganti dengan kabar baik, kesempatan indah, dan orang-orang yang benar-benar menjagamu.
+                    </p>
+                    <p class="mt-5 text-lg leading-9 text-[#4b1c31]">
+                        Semoga Saskia selalu punya alasan untuk tersenyum, selalu dikuatkan saat ragu, dan selalu merasa dicintai tanpa harus meminta. Terima kasih sudah menjadi dirimu — yang hangat, berharga, dan tidak tergantikan.
+                    </p>
+                    <p class="mt-8 font-script text-4xl text-wine">With love, today and always.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Timeline Memories Section -->
+        <section id="timeline" class="section-shell relative px-6 py-24 sm:py-32">
+            <div class="mx-auto max-w-5xl">
+                <div class="reveal mb-14 text-center">
+                    <p class="section-kicker">timeline memories</p>
+                    <h2 class="section-title">Jejak Kenangan</h2>
+                    <p class="section-subtitle">Setiap titik bisa kamu ubah menjadi tanggal, foto, dan cerita asli kalian.</p>
+                </div>
+                <div class="timeline-wrap">
+                    <div class="timeline-line"></div>
+                    <div class="memory-card reveal">
+                        <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=500&q=80" alt="First memory placeholder">
+                        <div><span>Chapter 01</span><h3>Pertama kali mengenal Saskia</h3><p>Ada rasa hangat yang muncul pelan-pelan, seperti cahaya pagi yang masuk dari sela jendela.</p></div>
+                    </div>
+                    <div class="memory-card reveal">
+                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=500&q=80" alt="Favorite memory placeholder">
+                        <div><span>Chapter 02</span><h3>Obrolan yang tak ingin selesai</h3><p>Dari percakapan sederhana, ternyata banyak hal kecil yang menjadi alasan untuk tersenyum.</p></div>
+                    </div>
+                    <div class="memory-card reveal">
+                        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=500&q=80" alt="Birthday memory placeholder">
+                        <div><span>Chapter 03</span><h3>Hari ini, hari Saskia</h3><p>Semua doa terbaik berkumpul di satu hari: semoga bahagia selalu menemukan jalan pulang kepadamu.</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Emotional Section -->
+        <section id="final" class="section-shell final-sky relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24 text-center">
+            <div class="reveal relative z-10 mx-auto max-w-4xl">
+                <p class="mb-5 text-[0.7rem] uppercase tracking-[0.55em] text-rose-100/65">one last little message</p>
+                <h2 class="text-balance font-serif text-5xl font-bold leading-tight sm:text-7xl">Thank you for existing, <span class="font-script text-gradient">Saskia.</span></h2>
+                <p class="mx-auto mt-7 max-w-2xl text-lg leading-8 text-rose-50/76">Semoga semua hal baik selalu datang untukmu, dalam bentuk yang paling indah, di waktu yang paling tepat.</p>
+                <button id="replay-music" class="magnetic-btn mt-10 rounded-full border border-rose-100/20 bg-white/10 px-8 py-4 text-sm font-semibold uppercase tracking-[0.24em] text-white backdrop-blur-xl transition hover:bg-rose-300/15">Replay Music</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 z-[95] hidden items-center justify-center bg-black/80 p-5 backdrop-blur-xl">
+        <button id="modal-close" class="absolute right-5 top-5 grid h-12 w-12 place-items-center rounded-full border border-white/15 bg-white/10 text-2xl text-white">×</button>
+        <div class="modal-panel max-w-4xl overflow-hidden rounded-[2rem] border border-white/15 bg-white/10 shadow-[0_0_80px_rgba(255,59,125,.28)]">
+            <img id="modal-img" class="max-h-[72vh] w-full object-cover" src="" alt="Selected memory">
+            <p id="modal-caption" class="p-5 text-center text-rose-50/80"></p>
+        </div>
+    </div>
+
+    <!-- Animation and icon libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
